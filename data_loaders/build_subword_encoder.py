@@ -29,7 +29,7 @@ PYTHONPATH=. python data_loaders/build_subword_encoder.py \
 
 import os
 import pdb
-
+import sys
 from data_loaders import text_encoder, tokenizer
 from data_loaders.summ_dataset_factory import SummDatasetFactory
 from project_settings import RESERVED_TOKENS, HParams
@@ -42,7 +42,7 @@ def main(opt):
         dl = dataset.get_data_loader(split='train', n_docs=1, sample_reviews=False,
                                      batch_size=1, num_workers=0, shuffle=False)
         print('Writing reviews to file')
-        with open('/tmp/{}_data.txt'.format(opt.dataset), 'w') as f:
+        with open('/tmp/{}_data.txt'.format(opt.dataset), 'w', encoding='utf-8') as f:
             for texts, ratings, metadata in dl:
                 f.write('{}\n'.format(texts[0]))
         print('Creating token counts')
@@ -69,7 +69,7 @@ def main(opt):
     enc_fp = os.path.join(opt.output_dir, opt.output_fn + '.pkl')
     save_file(encoder, enc_fp, verbose=True)
 
-    pdb.set_trace()
+    #pdb.set_trace()
 
 
 if __name__ == '__main__':
@@ -79,11 +79,11 @@ if __name__ == '__main__':
     parser.add_argument('--output_fn', default='subwordenc')
 
     parser.add_argument('--corpus_filepattern', default=None, help='Corpus of one or more text files')
-    parser.add_argument('--corpus_max_lines', default=float('inf'), help='How many lines of coprus to read')
+    parser.add_argument('--corpus_max_lines', default=sys.maxsize, type=int,  help='How many lines of coprus to read')
     parser.add_argument('--dataset', default=None, help='yelp,amazon')
 
-    parser.add_argument('--target_size', default=32000, help='Target size of vocab')
-    parser.add_argument('--num_iterations', default=4, help='Number of iterations')
+    parser.add_argument('--target_size', default=32000, type=int, help='Target size of vocab')
+    parser.add_argument('--num_iterations', default=4, type=int, help='Number of iterations')
     opt = parser.parse_args()
 
     main(opt)
