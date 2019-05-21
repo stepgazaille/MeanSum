@@ -80,13 +80,21 @@ The automated metrics results will be in ```checkpoints/sum/mlstm/yelp/<hparams>
 ```
 python train_sum.py --batch_size=16 --gpus=0,1,2,3 --notes=<additional_notes> 
 ```
-### Create new vocabulary
-Create a vocabulary of size 32000 from yelp:
+### Build subword encoder
+Create a vocabulary of size 32000 from Yelp corpus:
 ```
 PYTHONPATH=. python data_loaders/build_subword_encoder.py \
     --dataset=yelp \
     --target_size=32000 \
     --output_dir=datasets/yelp_dataset/processed/ \
     --output_fn=subwordenc
+```
+
+### Pretrain Language Model
+Pretrain a language model on Yelp corpus:
+```
+python pretrain_lm.py \
+    --dataset=yelp \
+    --save_model_fn=lm
 ```
 

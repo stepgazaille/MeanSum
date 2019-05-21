@@ -157,7 +157,7 @@ class HParams(object):
         ###############################################
         # LANGUAGE MODEL SPECIFIC
         ###############################################
-        self.lm_lr = 0.0005
+        self.lm_lr = 0.001
         self.lm_seq_len = 256
 
         # language model and mlstm (transformer has its own schedule)
