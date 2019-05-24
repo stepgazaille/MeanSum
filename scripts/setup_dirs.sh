@@ -3,7 +3,7 @@
 # Can execute script from anywhere
 parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
-cd ..
+cd ../..
 
 mkdir -p outputs/eval/yelp/n_docs_8
 mkdir -p outputs/eval/amazon/n_docs_8

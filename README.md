@@ -46,7 +46,7 @@ mv -v  ~/downloads/yelp_dataset/* ~/meansum/datasets/yelp_dataset/
 docker run --runtime=nvidia -it --rm \
     -v $(realpath ~/meansum):/home/meansum \
     stepgazaille/meansum \
-    /bin/bash -c "cd scripts/ && bash preprocess_data.sh"
+    /bin/bash -c "cd meansum/scripts/ && bash preprocess_data.sh"
 
 # Or locally:
 bash preprocess_data.sh

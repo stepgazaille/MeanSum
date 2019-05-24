@@ -1,0 +1,7 @@
+name: meansum
+dependencies:
+  - python=3.6
+  - jupyter
+  - pylint
+  - rope
+
