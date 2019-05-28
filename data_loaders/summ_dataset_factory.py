@@ -15,8 +15,9 @@ class SummDatasetFactory(object):
         pass
 
     @staticmethod
-    def get(name):
+    def get(name, dir_path):
         if name == 'amazon':
             return AmazonDataset()
         elif name == 'yelp':
-            return YelpDataset()
+            return YelpDataset(dir_path)
+

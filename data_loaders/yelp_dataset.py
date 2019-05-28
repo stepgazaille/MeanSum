@@ -43,7 +43,7 @@ class YelpPytorchDataset(Dataset):
                  subset=None,
                  seed=0,
                  sample_reviews=True,
-                 item_max_reviews=None):
+                 conf=None):
         """
         Args:
             split: str ('train', val', 'test')
@@ -88,10 +88,10 @@ class YelpPytorchDataset(Dataset):
 
         self.subset = subset
         self.sample_reviews = sample_reviews
-        item_max_reviews = float('inf') if item_max_reviews is None else item_max_reviews
+        item_max_reviews = float('inf') if conf.item_max_reviews is None else conf.item_max_reviews
         self.item_max_reviews = item_max_reviews
 
-        self.ds_conf = DatasetConfig('yelp')  # used for paths
+        self.ds_conf = conf
 
         # Set random seed so that choice is always the same across experiments
         # Especially necessary for test set (along with shuffle=False in the DataLoader)
@@ -286,12 +286,19 @@ class YelpDataset(SummReviewDataset):
     """
     Main class for using Yelp dataset
     """
-    def __init__(self):
+    def __init__(self, dir_path):
         super(YelpDataset, self).__init__()
         self.name = 'yelp'
-        self.conf = DatasetConfig('yelp')
         self.n_ratings_labels = 5
         self.reviews = None
+
+        self.conf = DatasetConfig('yelp')
+        self.conf.dir_path = dir_path
+        self.conf.reviews_path = dir_path + self.conf.reviews_path
+        self.conf.businesses_path = dir_path + self.conf.businesses_path
+        self.conf.processed_path = dir_path + self.conf.processed_path
+        self.conf.subwordenc_path = dir_path + self.conf.subwordenc_path
+
         self.subwordenc = load_file(self.conf.subwordenc_path)
 
     ####################################
@@ -321,7 +328,7 @@ class YelpDataset(SummReviewDataset):
         ds = YelpPytorchDataset(split=split,
                                 n_reviews=n_docs, n_reviews_min=n_docs_min, n_reviews_max=n_docs_max,
                                 subset=subset, seed=seed, sample_reviews=sample_reviews,
-                                item_max_reviews=self.conf.item_max_reviews)
+                                conf=self.conf)
 
         if n_docs_min and n_docs_max:
             loader = DataLoader(ds, batch_sampler=VariableNDocsSampler(ds), num_workers=num_workers)

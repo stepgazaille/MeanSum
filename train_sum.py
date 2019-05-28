@@ -434,7 +434,7 @@ class Summarizer(object):
         #
         # Get data, setup
         #
-        self.dataset = SummDatasetFactory.get(self.opt.dataset)
+        self.dataset = SummDatasetFactory.get(self.opt.dataset, self.opt.dir_path)
         train_iter = self.dataset.get_data_loader(split='train', n_docs=self.hp.n_docs, sample_reviews=True,
                                                   category=self.opt.az_cat,
                                                   batch_size=self.hp.batch_size, shuffle=True)
@@ -759,7 +759,7 @@ class Summarizer(object):
         """
         Run trained model on test set
         """
-        self.dataset = SummDatasetFactory.get(self.opt.dataset)
+        self.dataset = SummDatasetFactory.get(self.opt.dataset, self.opt.dir_path)
         if self.opt.test_group_ratings:
             def grouped_reviews_iter(n_docs):
                 store_path = os.path.join(self.dataset.conf.processed_path, 'test',
@@ -805,7 +805,7 @@ class Summarizer(object):
         self.sum_model.hp.n_docs = self.hp.n_docs
 
         # For tracking NLL of generated summaries
-        self.fixed_lm = torch.load(self.dataset.conf.lm_path)['model']  # StackedLSTMEncoder
+        self.fixed_lm = torch.load(self.opt.load_lm)['model']  # StackedLSTMEncoder
         self.fixed_lm = self.fixed_lm.module if isinstance(self.fixed_lm, nn.DataParallel) \
             else self.fixed_lm
 
@@ -900,7 +900,7 @@ class Summarizer(object):
 
         # Save summaries, rouge scores, and rouge distributions figures
         dataset_dir = self.opt.dataset if self.opt.az_cat is None else 'amazon_{}'.format(self.opt.az_cat)
-        out_dir = os.path.join(OUTPUTS_EVAL_DIR, dataset_dir, 'n_docs_{}'.format(self.hp.n_docs),
+        out_dir = os.path.join(self.opt.out_dir, 'eval', dataset_dir, 'n_docs_{}'.format(self.hp.n_docs),
                                'unsup_{}'.format(self.opt.notes))
         if not os.path.exists(out_dir):
             os.makedirs(out_dir)
@@ -942,6 +942,11 @@ if __name__ == '__main__':
 
     parser.add_argument('--dataset', default='yelp',
                         help='yelp,amazon')
+    parser.add_argument('--dir_path', default='../datasets/yelp_dataset/',
+                        help="Path to dataset")
+    parser.add_argument('--out_dir', default=OUTPUTS_EVAL_DIR,
+                        help="Output directory to save evaluation resulsts to")
+
     parser.add_argument('--az_cat', default=None,
                         help='"Movies_and_TV" or "Electronics"'
                              'Only train on one category')
@@ -980,6 +985,9 @@ if __name__ == '__main__':
                         help="CUDA visible devices, e.g. 2,3")
     parser.add_argument('--no_bigstore', action='store_true',
                         help="Do not sync results to bigstore")
+
+
+
     opt = parser.parse_args()
 
     # Hardcoded at the moment
@@ -998,6 +1006,8 @@ if __name__ == '__main__':
         opt.load_autoenc = ds_conf.autoenc_path
     if opt.load_test_sum is None:
         opt.load_test_sum = ds_conf.sum_path
+    if opt.dir_path is None:
+        opt.dir_path = ds_conf.dir_path
 
     # Run
     if opt.mode == 'train':

@@ -112,5 +112,6 @@ outputs/
 stable_checkpoints/
 summaries_0-200_cleaned.csv
 checkpoints/
+assets/
 *.log
 

@@ -29,10 +29,10 @@ class DatasetConfig(object):
 
             # Paths
             self.dir_path = '../datasets/yelp_dataset/'
-            self.reviews_path = '../datasets/yelp_dataset/review.json'
-            self.businesses_path = '../datasets/yelp_dataset/business.json'
-            self.processed_path = '../datasets/yelp_dataset/processed/'
-            self.subwordenc_path = '../datasets/yelp_dataset/processed/subwordenc_32000_maxrevs260_fixed.pkl'
+            self.reviews_path = 'review.json'
+            self.businesses_path = 'business.json'
+            self.processed_path = 'processed/'
+            self.subwordenc_path = 'processed/subwordenc_32000_maxrevs260_fixed.pkl'
 
             # Trained models
             self.lm_path = '../stable_checkpoints/lm/mlstm/yelp/batch_size_512-lm_lr_0.001-notes_data260_fixed/' \
