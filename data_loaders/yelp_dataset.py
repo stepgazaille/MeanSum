@@ -3,6 +3,7 @@
 """
 Data preparation and loaders for Yelp dataset. Here, an item is one "store" or "business"
 """
+import argparse
 import random
 import torch
 from collections import Counter, defaultdict
@@ -489,7 +490,11 @@ if __name__ == '__main__':
     from data_loaders.summ_dataset_factory import SummDatasetFactory
 
     hp = HParams()
-    ds = SummDatasetFactory.get('yelp')
+    parser = argparse.ArgumentParser()
+    parser.add_argument('--dir_path', default='./datasets/yelp_dataset/',
+                        help="Path to dataset")
+    opt = parser.parse_args()
+    ds = SummDatasetFactory.get('yelp', opt.dir_path)
     ds.save_processed_splits()
     # ds.print_original_data_stats()
     # ds.print_filtered_data_stats()

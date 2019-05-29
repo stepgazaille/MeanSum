@@ -5,5 +5,5 @@ parent_path=$( cd "$(dirname "${BASH_SOURCE[0]}")" ; pwd -P )
 cd "$parent_path"
 cd ../..
 
-PYTHONPATH=./meansum/ python meansum/data_loaders/yelp_dataset.py
+PYTHONPATH=./src/ python src/data_loaders/yelp_dataset.py
 
