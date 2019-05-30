@@ -32,7 +32,9 @@ class DatasetConfig(object):
             self.reviews_path = 'review.json'
             self.businesses_path = 'business.json'
             self.processed_path = 'processed/'
-            self.subwordenc_path = 'processed/subwordenc_32000_maxrevs260_fixed.pkl'
+            #self.subwordenc_path = 'processed/subwordenc_32000_maxrevs260_fixed.pkl'
+            self.subwordenc_path = 'processed/my_subwordenc_32000_maxrevs260.pkl'
+
 
             # Trained models
             self.lm_path = '../stable_checkpoints/lm/mlstm/yelp/batch_size_512-lm_lr_0.001-notes_data260_fixed/' \
@@ -132,7 +134,7 @@ class HParams(object):
         self.sum_clf = True  # calculate classification loss and accuracy
         self.sum_clf_lr = 0.0  # when 0, don't backwards() etc
 
-        self.sum_lr = 0.0001
+        self.sum_lr = 0.0005
         self.sum_clip = 5.0  # clip gradients
         self.train_subset = 1.0  # train on this ratio of the training set (speed up experimentation, try to overfit)
         self.freeze_embed = True  # don't further train embedding layers
@@ -182,6 +184,7 @@ class HParams(object):
         self.n_docs = 8
         self.n_docs_min = -1
         self.n_docs_max = -1
+        #self.max_nepochs = 50
         self.max_nepochs = 50
         self.notes = ''  # notes about run
 

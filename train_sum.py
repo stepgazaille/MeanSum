@@ -1016,9 +1016,8 @@ if __name__ == '__main__':
         save_run_data(save_dir, hp=hp)
         if (not hp.debug) and (not opt.no_bigstore):
             sync_run_data_to_bigstore(save_dir, exp_sub_dir=opt.bs_dir, method='cp')
-
+        
         summarizer = Summarizer(hp, opt, save_dir)
-
         summarizer.train()
     elif opt.mode == 'test':
         # Get directory model was saved in. Will be used to save tensorboard test results to

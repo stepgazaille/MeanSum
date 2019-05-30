@@ -208,7 +208,7 @@ class TextClassifierTrainer(object):
         #
 
         # NOTE: Use n_docs=1 so we can classify one review
-        self.dataset = SummDatasetFactory.get(self.opt.dataset)
+        self.dataset = SummDatasetFactory.get(self.opt.dataset, self.opt.dir_path)
         train_iter = self.dataset.get_data_loader(split='train', sample_reviews=True, n_docs=1,
                                                   batch_size=self.hp.batch_size, shuffle=True)
         val_iter = self.dataset.get_data_loader(split='val', sample_reviews=False, n_docs=1,
@@ -343,7 +343,8 @@ if __name__ == '__main__':
     # Add training language model args
     parser.add_argument('--dataset', default='yelp',
                         help='yelp,amazon')
-
+    parser.add_argument('--dir_path', default='../datasets/yelp_dataset/',
+                        help="Path to dataset")
     parser.add_argument('--save_model_basedir', default=os.path.join(SAVED_MODELS_DIR, 'clf', '{}', '{}'),
                         help="Base directory to save different runs' checkpoints to")
     parser.add_argument('--save_model_fn', default='clf',
