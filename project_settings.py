@@ -184,7 +184,6 @@ class HParams(object):
         self.n_docs = 8
         self.n_docs_min = -1
         self.n_docs_max = -1
-        #self.max_nepochs = 50
         self.max_nepochs = 50
         self.notes = ''  # notes about run
 

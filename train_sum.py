@@ -147,6 +147,7 @@ class Summarizer(object):
                                 use_stemmer=self.hp.use_stemmer,
                                 store_all=store_all_rouges)
         summaries = []  # this is only added to if store_all_summaries is True
+        batch_i = 0
         for s, (texts, ratings, metadata) in enumerate(data_iter):
             # texts: list of strs, each str is n_docs concatenated together with EDOC_TOK delimiter
             if s > nbatches:
@@ -424,6 +425,12 @@ class Summarizer(object):
                                        save_intermediate=False, run_val_subset=False,
                                        tb_writer=self.tb_val_sub_writer, tb_start_step=start_step)
                     tb_writer.add_scalar('stats/sec_per_val_subset', time.time() - start, start_step)
+            
+            batch_i+=1 
+            if batch_i >= 100:
+                print("DURATION (100 BATCH):", time.time() - start)
+                import sys
+                sys.exit()
 
         return stats_avgs, evaluator, summaries
 
