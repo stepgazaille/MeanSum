@@ -203,7 +203,7 @@ class LanguageModel(object):
         # Get data, setup
         #
 
-        self.dataset = SummDatasetFactory.get(self.opt.dataset)
+        self.dataset = SummDatasetFactory.get(self.opt.dataset, '../datasets/yelp_dataset/')
         subwordenc = self.dataset.subwordenc
         train_iter = self.dataset.get_data_loader(split='train', n_docs=self.hp.n_docs, sample_reviews=True,
                                                   batch_size=self.hp.batch_size, shuffle=True)
