@@ -40,6 +40,7 @@ def create_lm_data_iter(data, lm_seq_len):
         batch.src = [batch_size, seq_len+1] tensor
         the mlstm model transposes this and does src.t()[t] for every time step, predicting src.t()[t+1]
     """
+
     nbatches = (data.size(1) - 2) // lm_seq_len + 1  # up to and including end of sequences
     for i in range(nbatches):
         start = i * lm_seq_len
@@ -91,6 +92,7 @@ class LanguageModel(object):
         loss_avg = 0
         n_fwds = 0
         for s_idx, (texts, ratings, metadata) in enumerate(data_iter):
+
             start = time.time()
 
             # Add special tokens to texts
@@ -203,7 +205,7 @@ class LanguageModel(object):
         # Get data, setup
         #
 
-        self.dataset = SummDatasetFactory.get(self.opt.dataset)
+        self.dataset = SummDatasetFactory.get(self.opt.dataset, '../datasets/yelp_dataset/')
         subwordenc = self.dataset.subwordenc
         train_iter = self.dataset.get_data_loader(split='train', n_docs=self.hp.n_docs, sample_reviews=True,
                                                   batch_size=self.hp.batch_size, shuffle=True)

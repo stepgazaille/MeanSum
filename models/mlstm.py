@@ -106,8 +106,10 @@ class StackedLSTM(nn.Module):
             h_1 += [h_1_i]
             c_1 += [c_1_i]
 
+
         h_1 = torch.stack(h_1, dim=1)  # [batch, n_layers, hidden]
         c_1 = torch.stack(c_1, dim=1)  # [batch, n_layers, hidden]
+
 
         if self.layer_norm:
             input = self.h2o_norm(input)
@@ -154,7 +156,6 @@ class StackedLSTMEncoder(nn.Module):
                 emb = self.embed(input[:, t])
             elif input.dim() == 3:  # e.g. Gumbel softmax summaries
                 emb = torch.matmul(input[:, t, :], self.embed.weight)
-
             hidden, cell, output = self.rnn(emb, hidden, cell)
             if all_hiddens or (t == seq_len - 1):
                 hiddens.append(hidden)

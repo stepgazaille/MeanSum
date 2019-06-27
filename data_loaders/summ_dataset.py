@@ -64,12 +64,15 @@ class SummReviewDataset(SummDataset):
             labels: LongTensor of size [batch_size]
         """
         # Original ratings go from 1-5
+        
         labels_batch = [rating - 1 for rating in ratings_batch]
 
         batch = []
         for i, text in enumerate(texts_batch):
+            
             # Split apart by docs and potentially add delimiters
             docs = SummDataset.split_docs(text)  # list of strs
+
             if doc_prepend_id or doc_append_id:
                 docs_ids = [self.subwordenc.encode(doc) for doc in docs]
                 if doc_prepend_id:
@@ -78,6 +81,7 @@ class SummReviewDataset(SummDataset):
                 if doc_append_id:
                     for doc_ids in docs_ids:
                         doc_ids.append(doc_append_id)
+
                 docs_ids = [id for doc_ids in docs_ids for id in doc_ids]  # flatten
                 subtoken_ids = docs_ids
             else:
@@ -91,9 +95,13 @@ class SummReviewDataset(SummDataset):
             seq_len = len(subtoken_ids)
             batch.append((subtoken_ids, seq_len, labels_batch[i]))
 
+        
         texts_ids, lengths, labels = zip(*batch)
+
+
         lengths = torch.LongTensor(lengths)
         labels = torch.stack(labels)
+
 
         # Pad each text
         max_seq_len = max(lengths)

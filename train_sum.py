@@ -147,7 +147,10 @@ class Summarizer(object):
                                 use_stemmer=self.hp.use_stemmer,
                                 store_all=store_all_rouges)
         summaries = []  # this is only added to if store_all_summaries is True
+
+        
         for s, (texts, ratings, metadata) in enumerate(data_iter):
+
             # texts: list of strs, each str is n_docs concatenated together with EDOC_TOK delimiter
             if s > nbatches:
                 break
@@ -264,6 +267,7 @@ class Summarizer(object):
                                         clf_loss=stats_avgs['clf_loss'],
                                         clf_acc=stats_avgs['clf_acc'],
                                         clf_avg_diff=stats_avgs['clf_avg_diff'])
+
                 fwd_stats, summ_texts = self.unpack_sum_model_output(output)
                 stats = self.update_dict(stats, fwd_stats)
 
@@ -342,7 +346,7 @@ class Summarizer(object):
                     print('Error in calculating rouge')
                     if tb_writer:
                         tb_writer.add_scalar('other/rouge_error', 1, step)
-
+                
                 # Construct print statements
                 mb_time = time.time() - start
                 main_str = 'Epoch={}, batch={}/{}, split={}, time={:.4f}, tau={:.4f}'.format(
@@ -362,15 +366,12 @@ class Summarizer(object):
                 print_str = ' --- '.join([main_str, stats_str, stats_avgs_str, gn_str] +
                                          batch_rouge_strs + epoch_rouge_strs)
                 print(print_str)
-
                 # Example summary to get qualitative sense
                 print('\n', '-' * 100)
                 print('ORIGINAL REVIEWS: ', texts[0].encode('utf8'))
                 print('-' * 100)
                 print('SUMMARY: ', summ_texts[0].encode('utf8'))
                 print('-' * 100, '\n')
-
-
                 print('\n', '#' * 100, '\n')
 
                 # Write to tensorboard
@@ -501,11 +502,13 @@ class Summarizer(object):
                     else self.fixed_lm
 
             freeze(self.fixed_lm)
+        
 
         # Combining document representations
         self.combine_encs_h_net = None
         self.combine_encs_c_net = None
         if self.hp.combine_encs == 'ff':
+            print("FF")
             self.combine_encs_h_net = nn.Sequential(OrderedDict([
                 ('ln1', nn.LayerNorm(self.hp.n_docs * self.hp.hidden_size)),
                 ('fc1', nn.Linear(self.hp.n_docs * self.hp.hidden_size, self.hp.hidden_size)),
@@ -518,6 +521,7 @@ class Summarizer(object):
             else:
                 self.combine_encs_c_net = copy.deepcopy(self.combine_encs_h_net)
         elif self.hp.combine_encs == 'gru':
+            print("GRU")
             self.combine_encs_h_net = nn.GRU(self.hp.hidden_size, self.hp.hidden_size,
                                              num_layers=self.hp.combine_encs_gru_nlayers,
                                              batch_first=True,
@@ -528,6 +532,7 @@ class Summarizer(object):
             else:
                 self.combine_encs_c_net = copy.deepcopy(self.combine_encs_h_net)
 
+        
         # Decoder for generating summaries
         self.summ_dec = StackedLSTMDecoder(copy.deepcopy(self.docs_enc.embed),
                                            copy.deepcopy(self.docs_enc.rnn),
@@ -536,6 +541,7 @@ class Summarizer(object):
                                            attn_hidden_size=self.hp.docs_attn_hidden_size,
                                            attn_learn_alpha=self.hp.docs_attn_learn_alpha)
 
+        
         # Autoencoder for documents
         self.docs_autodec = None
         if self.hp.autoenc_docs:
@@ -545,6 +551,7 @@ class Summarizer(object):
                 self.docs_autodec = StackedLSTMDecoder(copy.deepcopy(self.summ_dec.embed),
                                                        copy.deepcopy(self.summ_dec.rnn))
 
+        
         # Encoder(-decoder) for summary to documents
         self.summ_enc = None
         self.docs_dec = None
@@ -560,6 +567,7 @@ class Summarizer(object):
                                                        copy.deepcopy(self.docs_enc.rnn))
         if self.hp.sum_cycle and self.hp.cycle_loss == 'rec':
             self.docs_dec = StackedLSTMDecoder(self.summ_dec.embed, self.summ_dec.rnn)
+
 
         # Load a pretrained model and freeze
         # 1. We may want this so that we have fixed, good representations for the documents.
@@ -669,12 +677,16 @@ class Summarizer(object):
                                             self.hp, self.dataset)
         self.models['sum_model'] = self.sum_model
 
+
+
         # Exclude discriminator and classifier as they have their own optimizers
         sum_optim_params = [p for n, p in self.sum_model.named_parameters() if ('discrim' not in n) and \
                             ('clf' not in n) and p.requires_grad]
+        
         self.sum_optimizer = OptWrapper(self.sum_model, self.hp.sum_clip,
                                         optim.Adam(sum_optim_params, lr=self.hp.sum_lr))
         self.optimizers['sum_optimizer'] = self.sum_optimizer
+
 
         # Count number of params
         all_params = self.sum_model.parameters()
@@ -682,6 +694,7 @@ class Summarizer(object):
         print('Number of parameters: {}'.format(sum([p.nelement() for p in all_params])))
         all_trainable_params = [p for p in all_params if p.requires_grad]
         print('Number of trainable parameters: {}'.format(sum([p.nelement() for p in all_trainable_params])))
+        
 
         #
         # Get extractive summarizer if using that loss

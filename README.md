@@ -90,7 +90,7 @@ PYTHONPATH=. python data_loaders/build_subword_encoder.py \
     --output_fn=subwordenc
 ```
 
-### Pretrain Language Model
+### Pretrain a Language Model
 Pretrain a language model on Yelp corpus:
 ```
 python pretrain_lm.py \
@@ -98,3 +98,12 @@ python pretrain_lm.py \
     --save_model_fn=lm
 ```
 
+
+### Train a Summarization Model
+Pretrain a summarization model on Yelp corpus:
+```
+python train_sum.py \
+    --load_lm=../stable_checkpoints/lm/mlstm/yelp/batch_size_512-lm_lr_0.001-notes_data260_fixed/lm_e24_2.88.pt \
+    --load_clf=../stable_checkpoints/clf/cnn/yelp/batch_size_256-notes_data260_fixed/clf_e10_l0.6760_a0.7092.pt \
+    --batch_size=8
+```

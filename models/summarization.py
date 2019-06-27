@@ -92,8 +92,6 @@ class SummarizationModel(nn.Module):
         ##########################################################
         # ENCODE DOCUMENTS
         ##########################################################
-        # Print a review if we're autoencoding or using cycle reconstruction loss so that we can
-        # check how well the reconstruction is
         if self.hp.autoenc_docs or (self.hp.cycle_loss == 'rec'):
             if minibatch_idx % print_every_nbatches == 0:
                 if docs_ids.get_device() == 0:
@@ -108,9 +106,10 @@ class SummarizationModel(nn.Module):
             n_docs = docs_ids.size(1)  # TODO: need to get data loader to choose items with same n_docs
             docs_ids = docs_ids.view(-1, docs_ids.size(-1))  # [batch * n_docs, len]
 
+
         h_init, c_init = self.docs_enc.rnn.state0(docs_ids.size(0))
         h_init, c_init = move_to_cuda(h_init), move_to_cuda(c_init)
-        hiddens, cells, outputs = self.docs_enc(docs_ids, h_init, c_init)
+        hiddens, cells, outputs = self.docs_enc.forward(docs_ids, h_init, c_init)
         docs_enc_h, docs_enc_c = hiddens[-1], cells[-1]  # [_, n_layers, hidden]
 
         ##########################################################

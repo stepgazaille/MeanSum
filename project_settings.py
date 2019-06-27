@@ -32,8 +32,7 @@ class DatasetConfig(object):
             self.reviews_path = 'review.json'
             self.businesses_path = 'business.json'
             self.processed_path = 'processed/'
-            #self.subwordenc_path = 'processed/subwordenc_32000_maxrevs260_fixed.pkl'
-            self.subwordenc_path = 'processed/my_subwordenc_32000_maxrevs260.pkl'
+            self.subwordenc_path = 'processed/subwordenc_32000_maxrevs260_fixed.pkl'
 
 
             # Trained models
@@ -180,12 +179,13 @@ class HParams(object):
         # TRAINING AND DATA REPRESENTATION
         ###############################################
         self.seed = 1234
-        self.batch_size = 128
+        # self.batch_size = 128
+        self.batch_size = 1
         self.n_docs = 8
         self.n_docs_min = -1
         self.n_docs_max = -1
         #self.max_nepochs = 50
-        self.max_nepochs = 50
+        self.max_nepochs = 1
         self.notes = ''  # notes about run
 
         self.optim = 'normal'  # normal or noam
