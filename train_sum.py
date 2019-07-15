@@ -19,6 +19,7 @@ import pdb
 import shutil
 import time
 from collections import OrderedDict, defaultdict
+from datetime import datetime
 
 import numpy as np
 from tensorboardX import SummaryWriter
@@ -254,6 +255,7 @@ class Summarizer(object):
                     retain_graph = (clf_optimizer is not None) or (sum_optimizer is not None)
                     (stats['adv_gen_loss']).backward(retain_graph=retain_graph)
             else:
+                start_forward = datetime.now()
                 output = self.sum_model(docs_ids, labels,
                                         cycle_tgt_ids=cycle_tgt_ids,
                                         extract_summ_ids=extract_summ_ids,
@@ -267,7 +269,8 @@ class Summarizer(object):
                                         clf_loss=stats_avgs['clf_loss'],
                                         clf_acc=stats_avgs['clf_acc'],
                                         clf_avg_diff=stats_avgs['clf_avg_diff'])
-
+                if self.hp.debug:
+                    print("Forward pass duration:", datetime.now() - start_forward)
                 fwd_stats, summ_texts = self.unpack_sum_model_output(output)
                 stats = self.update_dict(stats, fwd_stats)
 
@@ -285,20 +288,33 @@ class Summarizer(object):
             # Cycle loss
             sum_gn = -1.0
             if sum_optimizer:
+                start_backward = datetime.now()
                 if self.hp.autoenc_docs and \
                         (not self.hp.load_ae_freeze):  # don't backward() if loaded pretrained autoenc (it's frozen)
                     retain_graph = self.hp.early_cycle or self.hp.sum_cycle or self.hp.extract_loss
                     stats['autoenc_loss'].backward(retain_graph=retain_graph)
+                    if self.hp.debug:
+                        print("Recreation backward pass duration:", datetime.now() - start_backward)
                 if self.hp.early_cycle and (not self.hp.autoenc_only):
                     stats['early_cycle_loss'].backward()
                 if self.hp.sum_cycle and (not self.hp.autoenc_only):
                     retain_graph = self.hp.extract_loss
+                    sim_backward = datetime.now()
                     stats['cycle_loss'].backward(retain_graph=retain_graph)
+                    if self.hp.debug:
+                        print("Similarity backward pass duration:", datetime.now() - sim_backward)
                 if self.hp.extract_loss and (not self.hp.autoenc_only):
                     retain_graph = clf_optimizer is not None
                     stats['extract_loss'].backward(retain_graph=retain_graph)
+                
+                if self.hp.debug:
+                    print("Backward passes duration:", datetime.now() - start_backward)
+                
                 sum_gn = calc_grad_norm(self.docs_enc)
+                step_start = datetime.now()
                 sum_optimizer.step()
+                if self.hp.debug:
+                    print("Optimizer step duration:", datetime.now() - step_start)
 
             # Gather summaries so we can calculate rouge
             clean_summs = []

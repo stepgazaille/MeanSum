@@ -194,7 +194,7 @@ class HParams(object):
         #
         # UTILS / MISCELLANEOUS
         #
-        self.debug = False
+        self.debug = True
 
         ###############################################
         # EVALUATION
