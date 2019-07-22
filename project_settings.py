@@ -180,7 +180,7 @@ class HParams(object):
         ###############################################
         self.seed = 1234
         # self.batch_size = 128
-        self.batch_size = 1
+        self.batch_size = 4
         self.n_docs = 8
         self.n_docs_min = -1
         self.n_docs_max = -1
@@ -194,7 +194,7 @@ class HParams(object):
         #
         # UTILS / MISCELLANEOUS
         #
-        self.debug = True
+        self.debug = False
 
         ###############################################
         # EVALUATION
