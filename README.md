@@ -34,7 +34,7 @@ docker build -t stepgazaille/meansum .
 bash install_python_pkgs.sh
 python update_tensorboard.py
 ```
-5. Download the [Yelp data set](https://www.yelp.com/dataset) and place files in ```datasets/yelp_dataset/```. For example:
+5. Download the [Yelp data set](https://www.yelp.com/dataset) and place files in ```downloads/yelp_dataset/```. For example:
 ```
 mkdir ~/downloads/yelp_dataset/
 tar -C ~/downloads/yelp_dataset/ -xvf ~/downloads/yelp_dataset.tar
