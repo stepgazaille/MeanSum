@@ -294,18 +294,28 @@ class Summarizer(object):
                     retain_graph = self.hp.early_cycle or self.hp.sum_cycle or self.hp.extract_loss
                     stats['autoenc_loss'].backward(retain_graph=retain_graph)
                     if self.hp.debug:
-                        print("Recreation backward pass duration:", datetime.now() - start_backward)
+                        print("autoenc_loss backward pass duration:", datetime.now() - start_backward)
+                        print("retain_graph:", retain_graph)
                 if self.hp.early_cycle and (not self.hp.autoenc_only):
+                    early_cycle_backward = datetime.now()
                     stats['early_cycle_loss'].backward()
+                    if self.hp.debug:
+                        print("early_cycle_loss backward pass duration:", datetime.now() - early_cycle_backward)
+                        print("retain_graph:", False)
                 if self.hp.sum_cycle and (not self.hp.autoenc_only):
                     retain_graph = self.hp.extract_loss
                     sim_backward = datetime.now()
                     stats['cycle_loss'].backward(retain_graph=retain_graph)
                     if self.hp.debug:
-                        print("Similarity backward pass duration:", datetime.now() - sim_backward)
+                        print("cycle_loss backward pass duration:", datetime.now() - sim_backward)
+                        print("retain_graph:", retain_graph)
                 if self.hp.extract_loss and (not self.hp.autoenc_only):
                     retain_graph = clf_optimizer is not None
+                    extract_loss_backward = datetime.now()
                     stats['extract_loss'].backward(retain_graph=retain_graph)
+                    if self.hp.debug:
+                        print("extract_loss backward pass duration:", datetime.now() - extract_loss_backward)
+                        print("retain_graph:", retain_graph)
                 
                 if self.hp.debug:
                     print("Backward passes duration:", datetime.now() - start_backward)
