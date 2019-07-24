@@ -743,6 +743,7 @@ class Summarizer(object):
         #
         # Train
         #
+        start = datetime.now()
         for epoch in range(self.hp.max_nepochs):
             try:
                 self.sum_model.train()
@@ -793,6 +794,9 @@ class Summarizer(object):
             save_models(self.save_dir, {'sum_model': save_model, 'tau': self.tau}, self.optimizers, epoch, self.opt,
                         'tot{:.2f}_r1f{:.2f}'.format(stats_avgs['total_loss'],
                                                      evaluator.avg_avg_rouges['rouge1']['f']))
+        
+        print("Training duration:", datetime.now() - start)
+
 
     def test(self):
         """
